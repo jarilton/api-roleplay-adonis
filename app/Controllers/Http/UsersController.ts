@@ -21,4 +21,8 @@ export default class UsersController {
 
     return response.created({ user })
   }
+
+  public async update({ request, response }: HttpContextContract) {
+    return response.ok({})
+  }
 }
