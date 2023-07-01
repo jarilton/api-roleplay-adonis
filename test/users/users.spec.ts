@@ -127,7 +127,7 @@ test.group('User', (group) => {
     assert.equal(body.user.id, id)
   })
 
-  test.only('it should update the password of the user', async (assert) => {
+  test('it should update the password of the user', async (assert) => {
     const user = await UserFactory.create()
     const password = '123456'
 
@@ -141,6 +141,51 @@ test.group('User', (group) => {
 
     await user.refresh()
     assert.isTrue(await Hash.verify(user.password, password))
+  })
+
+  test('it should return 422 when required data is not provided', async (assert) => {
+    const { id } = await UserFactory.create()
+
+    const { body } = await supertest(BaseUrl).put(`/users/${id}`).send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when try to update an user with invalid email', async (assert) => {
+    const { id } = await UserFactory.create()
+
+    const { body } = await supertest(BaseUrl)
+      .put(`/users/${id}`)
+      .send({ email: 'invalid_email' })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when try to update an user with invalid password', async (assert) => {
+    const { id } = await UserFactory.create()
+
+    const { body } = await supertest(BaseUrl)
+      .put(`/users/${id}`)
+      .send({ password: '123' })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test.only('it should return 422 when try to update an user with invalid avatar', async (assert) => {
+    const { id } = await UserFactory.create()
+
+    const { body } = await supertest(BaseUrl)
+      .put(`/users/${id}`)
+      .send({ avatar: 'invalid_url' })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   group.beforeEach(async () => {
