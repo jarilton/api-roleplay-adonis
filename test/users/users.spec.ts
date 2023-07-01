@@ -1,3 +1,4 @@
+import Database from '@ioc:Adonis/Lucid/Database'
 import { UserFactory } from 'Database/factories'
 import test from 'japa'
 import supertest from 'supertest'
@@ -16,7 +17,7 @@ const BaseUrl = `http://${process.env.HOST}:${process.env.PORT}`
   }
 */
 
-test.group('User', () => {
+test.group('User', (group) => {
   test('it should create an user', async (assert) => {
     const userPayload = {
       email: 'teste@teste.com',
@@ -35,7 +36,7 @@ test.group('User', () => {
     assert.equal(body.user.avatar, userPayload.avatar)
   })
 
-  test('it should return an error 409 when try to create an user with an email already exists', async (assert) => {
+  test.only('it should return an error 409 when try to create an user with an email already exists', async (assert) => {
     const { email } = await UserFactory.create()
 
     const { body } = await supertest(BaseUrl)
@@ -47,6 +48,18 @@ test.group('User', () => {
       })
       .expect(409)
 
-    assert.exists(body.errors, 'Property errors not exists')
+    assert.exists(body.message)
+    assert.exists(body.code)
+    assert.exists(body.status)
+    assert.include(body.message, 'email')
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 409)
+  })
+
+  group.beforeEach(async () => {
+    await Database.beginGlobalTransaction()
+  })
+  group.afterEach(async () => {
+    await Database.rollbackGlobalTransaction()
   })
 })
