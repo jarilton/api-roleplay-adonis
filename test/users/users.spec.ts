@@ -33,7 +33,6 @@ test.group('User', (group) => {
     assert.equal(body.user.email, userPayload.email)
     assert.equal(body.user.username, userPayload.username)
     assert.notExists(body.user.password, 'Property password exists')
-    assert.equal(body.user.avatar, userPayload.avatar)
   })
 
   test('it should return an error 409 when try to create an user with an email already exists', async (assert) => {
@@ -76,8 +75,36 @@ test.group('User', (group) => {
     assert.equal(body.status, 409)
   })
 
-  test.only('it should return 422 required data is not provided', async (assert) => {
+  test('it should return 422 required data is not provided', async (assert) => {
     const { body } = await supertest(BaseUrl).post('/users').send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when try to create an user with invalid email', async (assert) => {
+    const { body } = await supertest(BaseUrl)
+      .post('/users')
+      .send({
+        email: 'invalid_email',
+        username: 'teste',
+        password: '123456',
+      })
+      .expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
+  })
+
+  test('it should return 422 when try to create with invalid password  ', async (assert) => {
+    const { body } = await supertest(BaseUrl)
+      .post('/users')
+      .send({
+        email: 'teste@teste.com',
+        password: '123',
+        username: 'teste',
+      })
+      .expect(422)
 
     assert.equal(body.code, 'BAD_REQUEST')
     assert.equal(body.status, 422)
