@@ -11,7 +11,13 @@ test.group('Password', (group) => {
     const user = await UserFactory.create()
 
     Mail.trap((message) => {
+      assert.deepEqual(message.to, [{ address: user.email }])
       assert.equal(message.subject, 'Recuperação de senha')
+      assert.equal(message.from, {
+        address: 'no-reply@roleplay.com',
+      })
+      assert.equal(message.subject, 'Roleplay: Recuperação de senha')
+      assert.equal(message.text, 'Clique no link para recuperar sua senha')
     })
 
     await supertest(BASE_URL)
