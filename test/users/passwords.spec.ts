@@ -17,7 +17,7 @@ test.group('Password', (group) => {
         address: 'no-reply@roleplay.com',
       })
       assert.equal(message.subject, 'Roleplay: Recuperação de senha')
-      assert.equal(message.text, 'Clique no link para recuperar sua senha')
+      assert.include(message.html!, user.username)
     })
 
     await supertest(BASE_URL)
