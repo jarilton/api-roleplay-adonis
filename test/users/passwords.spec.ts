@@ -31,6 +31,22 @@ test.group('Password', (group) => {
     Mail.restore()
   })
 
+  test.only('it should be able to reset password token', async (assert) => {
+    const user = await UserFactory.create()
+
+    await supertest(BASE_URL)
+      .post('/forgot-password')
+      .send({
+        email: user.email,
+        resetPasswordUrl: 'url',
+      })
+      .expect(204)
+
+    const tokens = await user.related('tokens').query()
+    console.log(tokens)
+    assert.isNotEmpty(tokens)
+  })
+
   group.beforeEach(async () => {
     await Database.beginGlobalTransaction()
   })

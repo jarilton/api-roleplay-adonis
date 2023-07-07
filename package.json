@@ -30,9 +30,9 @@
     "youch-terminal": "^2.2.1"
   },
   "dependencies": {
-    "@adonisjs/core": "^5.4.2",
+    "@adonisjs/core": "^5.9.0",
     "@adonisjs/lucid": "^18.4.0",
-    "@adonisjs/mail": "^8.2.0",
+    "@adonisjs/mail": "^7.2.2",
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/view": "^6.2.0",
     "luxon": "^3.3.0",
