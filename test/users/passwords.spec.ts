@@ -7,7 +7,7 @@ import supertest from 'supertest'
 const BASE_URL = `http://${process.env.HOST}:${process.env.PORT}`
 
 test.group('Password', (group) => {
-  test.only('it should be able to send forgot password email instructions', async (assert) => {
+  test('it should be able to send forgot password email instructions', async (assert) => {
     const user = await UserFactory.create()
 
     Mail.trap((message) => {
@@ -31,7 +31,7 @@ test.group('Password', (group) => {
     Mail.restore()
   })
 
-  test.only('it should be able to reset password token', async (assert) => {
+  test('it should be able to reset password token', async (assert) => {
     const user = await UserFactory.create()
 
     await supertest(BASE_URL)
@@ -45,6 +45,13 @@ test.group('Password', (group) => {
     const tokens = await user.related('tokens').query()
     console.log(tokens)
     assert.isNotEmpty(tokens)
+  })
+
+  test.only('it should return 422 required hen required data is not provided or data is invalid', async (assert) => {
+    const { body } = await supertest(BASE_URL).post('/forgot-password').send({}).expect(422)
+
+    assert.equal(body.code, 'BAD_REQUEST')
+    assert.equal(body.status, 422)
   })
 
   group.beforeEach(async () => {
