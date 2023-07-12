@@ -6,18 +6,6 @@ import Hash from '@ioc:Adonis/Core/Hash'
 
 const BaseUrl = `http://${process.env.HOST}:${process.env.PORT}`
 
-/* 
-  {
-    "users": {
-      "id:": number,
-      "email": string,
-      "username": string,
-      "password": string,
-      "avatar": string,
-    }
-  }
-*/
-
 test.group('User', (group) => {
   test('it should create an user', async (assert) => {
     const userPayload = {
